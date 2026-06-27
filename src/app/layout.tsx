@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Orbitron } from "next/font/google";
+import { Space_Grotesk, Orbitron, Cascadia_Code } from "next/font/google"
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider"
+import { cn } from "@/lib/utils";
 
 const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const orbitron = Orbitron({
-  variable: "--font-orbitron",
+const orbitronHeading = Orbitron({
+  variable: "--font-heading",
   subsets: ["latin"],
 });
+
+const fontMono = Cascadia_Code({
+  subsets: ["latin"],
+  variable: "--font-mono",
+})
 
 export const metadata: Metadata = {
   title: "Codinger: Learn to Code",
@@ -26,12 +33,12 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${orbitron.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={cn("antialiased", fontMono.variable, "font-sans", spaceGrotesk.variable, orbitronHeading.variable)}
     >
-      <head>
-        <meta name="apple-mobile-web-app-title" content="Codinger" />
-      </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
-  );
+  )
 }
