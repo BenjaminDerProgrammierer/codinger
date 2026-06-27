@@ -15,7 +15,7 @@ const orbitron = Orbitron({
 export const metadata: Metadata = {
   title: "Codinger: Learn to Code",
   description:
-    "A platform to learn coding through interactive lessons and projects.",
+    "A platform to learn to code by completing interactive coding exercises.",
 };
 
 interface RootLayoutProps {
