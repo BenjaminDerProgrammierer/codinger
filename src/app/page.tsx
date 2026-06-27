@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export default function Page() {
   return (
@@ -12,6 +13,12 @@ export default function Page() {
         </div>
         <div className="font-mono text-xs text-muted-foreground">
           (Press <kbd>d</kbd> to toggle dark mode)
+        </div>
+        <div>
+          <p>To go to the platform, click the button below or navigate to <code>/platform</code> in your browser.</p>
+          <Button asChild className="mt-2">
+            <Link href="/platform">Go to platform</Link>
+          </Button>
         </div>
       </div>
     </div>
