@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Orbitron, Cascadia_Code } from "next/font/google"
-import "./globals.css";
+
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
+import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-sans",
