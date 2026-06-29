@@ -12,6 +12,8 @@ A platform to learn to code by completing interactive coding exercises.
 * TypeScript
 * Tailwind CSS
 * Shadcn/ui
+* Prisma ORM
+* PostgreSQL (sqlite for development)
 
 ## Motivation
 

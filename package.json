@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db": "docker-compose -f prisma/docker-compose.yml up",
+    "db-studio": "npx prisma studio",
+    "db-migrate": "npx prisma migrate dev && npx prisma generate"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

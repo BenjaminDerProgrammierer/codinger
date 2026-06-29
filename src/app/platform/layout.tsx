@@ -14,7 +14,7 @@ export default function PlatformLayout({
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col p-5 sm:px-6 lg:px-8">
         <header className="flex items-center justify-between gap-4 border bg-card/80 p-4">
-          <h1 className="text-lg font-semibold font-heading">Codinger</h1>
+          <h1 className="text-lg font-semibold font-heading"><Link href="/platform">Codinger</Link></h1>
           <nav>
             <ul>
               <li>
