@@ -10,23 +10,26 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import Link from "next/link"
+import { LearningPath } from "../../generated/prisma/client"
 
-export default async function LearningPaths() {
-  const paths = await prisma.learningPath.findMany()
+export default async function UnitOverview({ path }: { path: LearningPath }) {
+  const units = await prisma.unit.findMany({
+    where: { learningPathId: path.id },
+  })
 
   return (
     <div className="grid grid-cols-2 gap-5 p-5">
-      {paths.map((path) => (
-        <Card key={path.id}>
+      {units.map((unit) => (
+        <Card key={unit.id}>
           <CardHeader>
-            <CardTitle>{path.title}</CardTitle>
+            <CardTitle>{unit.title}</CardTitle>
           </CardHeader>
           <CardContent className="h-full">
-            {path.description}
+            {unit.description}
           </CardContent>
           <CardFooter>
             <Button asChild className="mt-auto">
-              <Link href={`platform/path/${path.id}?confirmNewPath=true`} className="w-full">
+              <Link href={`platform/unit/${unit.id}`} className="w-full">
                 Start Learning
               </Link>
             </Button>
