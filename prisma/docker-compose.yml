@@ -1,0 +1,12 @@
+services:
+  db:
+    image: postgres:18
+    container_name: codinger-db
+    environment:
+      POSTGRES_USER: codinger
+      POSTGRES_PASSWORD: 562e0783104f15a9e3fb95fa496069c1
+      POSTGRES_DB: codinger
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql

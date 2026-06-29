@@ -4,6 +4,8 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   msw: false
+  '@prisma/engines': true
+  prisma: true
 
 minimumReleaseAgeExclude:
   - prettier@3.8.5
