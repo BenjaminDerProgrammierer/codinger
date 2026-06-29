@@ -4,14 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "db": "docker-compose -f prisma/docker-compose.yml up",
-    "db-studio": "npx prisma studio",
-    "db-migrate": "npx prisma migrate dev && npx prisma generate"
+    "db-studio": "prisma studio",
+    "db-migrate": "prisma migrate dev && prisma generate"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
