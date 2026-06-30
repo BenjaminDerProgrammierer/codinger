@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 import { prisma } from "@/lib/prisma"
 import { Button } from "@/components/ui/button"
 import {
@@ -9,15 +11,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import Link from "next/link"
 
 export default async function LearningPaths() {
   const paths = await prisma.learningPath.findMany()
 
   return (
-    <div className="grid grid-cols-2 gap-5 p-5">
+    <div className="flex flex-wrap justify-center gap-5 p-5">
       {paths.map((path) => (
-        <Card key={path.id}>
+        <Card key={path.id} className="w-70 flex-col">
           <CardHeader>
             <CardTitle>{path.title}</CardTitle>
           </CardHeader>

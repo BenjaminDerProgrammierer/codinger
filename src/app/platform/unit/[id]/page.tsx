@@ -1,21 +1,19 @@
-import { Button } from "@/components/ui/button"
-import UnitOverview from "@/components/UnitOverview"
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
-import { headers } from "next/headers"
-import Link from "next/link"
-import { redirect } from "next/navigation"
+import Link from 'next/link';
+
+import { Button } from '@/components/ui/button';
+import { prisma } from '@/lib/prisma';
+import LessonOverview from '@/components/LessonOverview';
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = await params
+  const { id } = await params;
 
   const unit = await prisma.unit.findUnique({
     where: { id: Number.parseInt(id) },
-  })
+  });
 
   if (!unit) {
     return (
@@ -26,10 +24,15 @@ export default async function Page({
           <Link href={`/platform`}>Return to Overview</Link>
         </Button>
       </div>
-    )
+    );
   }
 
   return (
-    <h1>Unit {unit.title}</h1>
-  )
+    <>
+      <p className="text-sm font-medium text-muted-foreground">Unit</p>
+      <h2 className="mb-2 font-heading text-2xl">{unit.title}</h2>
+      <p className="text-muted-foreground">{unit.description}</p>
+      <LessonOverview unit={unit} />
+    </>
+  );
 }

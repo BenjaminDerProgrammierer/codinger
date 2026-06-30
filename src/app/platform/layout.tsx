@@ -1,14 +1,14 @@
-import Link from "next/link"
+import Link from 'next/link';
 
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { auth } from "@/lib/auth"
-import { redirect } from "next/navigation"
-import { headers } from "next/headers"
-import SignOutButton from "@/components/SignOutButton"
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
+import SignOutButton from '@/components/SignOutButton';
 
 interface PlatformLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export default async function PlatformLayout({
@@ -16,13 +16,13 @@ export default async function PlatformLayout({
 }: Readonly<PlatformLayoutProps>) {
   const session = await auth.api.getSession({
     headers: await headers(),
-  })
+  });
   if (!session) {
-    redirect("/login")
+    redirect('/login');
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen">
       <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col p-5 sm:px-6 lg:px-8">
         <header className="flex items-center justify-between gap-4 border bg-card/80 p-4">
           <h1 className="font-heading text-lg font-semibold">
@@ -65,6 +65,6 @@ export default async function PlatformLayout({
           <p className="float-right">&copy; 2026 Codinger</p>
         </footer>
       </div>
-    </main>
-  )
+    </div>
+  );
 }

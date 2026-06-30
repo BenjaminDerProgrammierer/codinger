@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 import { prisma } from "@/lib/prisma"
 import { Button } from "@/components/ui/button"
 import {
@@ -9,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import Link from "next/link"
 import { LearningPath } from "@/generated/prisma/client"
 
 export default async function UnitOverview({ path }: { path: LearningPath }) {
@@ -18,9 +19,9 @@ export default async function UnitOverview({ path }: { path: LearningPath }) {
   })
 
   return (
-    <div className="grid grid-cols-2 gap-5 p-5">
+     <div className="flex flex-wrap justify-center gap-5 p-5">
       {units.map((unit) => (
-        <Card key={unit.id}>
+         <Card key={unit.id} className="w-70 flex-col">
           <CardHeader>
             <CardTitle>{unit.title}</CardTitle>
           </CardHeader>
