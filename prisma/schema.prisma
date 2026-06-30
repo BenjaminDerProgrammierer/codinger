@@ -33,8 +33,8 @@ model Lesson {
   id       Int    @id @default(autoincrement())
   title    String
   content  String
-  course   Unit   @relation(fields: [courseId], references: [id])
-  courseId Int
+  unit   Unit   @relation(fields: [unitId], references: [id])
+  unitId Int
 }
 
 // ------ Better Auth Models ------
