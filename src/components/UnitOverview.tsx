@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import Link from "next/link"
-import { LearningPath } from "../../generated/prisma/client"
+import { LearningPath } from "@/generated/prisma/client"
 
 export default async function UnitOverview({ path }: { path: LearningPath }) {
   const units = await prisma.unit.findMany({
