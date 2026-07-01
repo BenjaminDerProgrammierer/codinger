@@ -18,7 +18,7 @@ const orbitronHeading = Orbitron({
 const fontMono = Cascadia_Code({
   subsets: ['latin'],
   variable: '--font-mono',
-  adjustFontFallback: false,
+  fallback: ['monospace'],
 });
 
 export const metadata: Metadata = {
