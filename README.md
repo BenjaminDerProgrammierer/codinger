@@ -24,3 +24,18 @@ Apart from that, I need hours for Hack Club Horizons AND I aways wanted to try T
 ## How it works
 
 <!-- TODO: Add "How it works" section -->
+
+## TODO
+
+* Add more courses / content
+* Make the course content rich (currently not interpreting markdown, no code editor, no code execution, etc.)
+
+## License Attribution
+
+Used code that is Copyright (c) Microsoft Corporation. All rights reserved. under the MIT License. Licensed under the MIT License.
+
+## Considerations for the integrated sandbox / code playground
+
+* <https://github.com/microsoft/monaco-editor>
+* <https://github.com/codesandbox/sandpack>
+* <https://github.com/live-codes/livecodes>

@@ -1,43 +1,43 @@
-"use client"
+'use client';
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from '@/components/ui/card';
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { authClient } from "@/lib/auth-client"
-import { useState } from "react"
-import { redirect } from "next/navigation"
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { authClient } from '@/lib/auth-client';
+import { useState } from 'react';
+import { redirect } from 'next/navigation';
 
 export function LoginForm({
   className,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<'div'>) {
   authClient.getSession().then(({ data }) => {
     if (data?.session) {
-      redirect("/platform");
+      redirect('/platform');
     }
   });
 
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
 
     const { data, error } = await authClient.signIn.email(
       {
@@ -52,7 +52,7 @@ export function LoginForm({
         /**
          * A URL to redirect to after the user verifies their email (optional)
          */
-        callbackURL: "/",
+        callbackURL: '/',
         /**
          * remember the user session after the browser is closed.
          * @default true
@@ -61,24 +61,24 @@ export function LoginForm({
       },
       {
         onRequest: (ctx) => {
-          setError(null)
-          setLoading(true)
+          setError(null);
+          setLoading(true);
         },
         onSuccess: (ctx) => {
-          setLoading(false)
-          redirect("/platform")
+          setLoading(false);
+          redirect('/platform');
         },
         onError: (ctx) => {
-          setLoading(false)
-          setError(ctx.error.message)
+          setLoading(false);
+          setError(ctx.error.message);
         },
-      },
-    )
-    console.log({ data, error })
+      }
+    );
+    console.log({ data, error });
   }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
@@ -112,7 +112,7 @@ export function LoginForm({
                 <Input id="password" type="password" name="password" required />
               </Field>
               <p>
-                {loading && "Creating account..."}{" "}
+                {loading && 'Creating account...'}{' '}
                 <span className="text-destructive">{error}</span>
               </p>
 
@@ -122,7 +122,7 @@ export function LoginForm({
                   variant="outline"
                   type="button"
                   onClick={() =>
-                    authClient.signIn.social({ provider: "google" })
+                    authClient.signIn.social({ provider: 'google' })
                   }
                 >
                   Login with Google
@@ -136,5 +136,5 @@ export function LoginForm({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

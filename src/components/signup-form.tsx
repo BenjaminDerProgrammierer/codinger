@@ -1,48 +1,48 @@
-"use client"
+'use client';
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from '@/components/ui/card';
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { authClient } from "@/lib/auth-client"
-import Link from "next/link"
-import { redirect } from "next/navigation"
-import { useState } from "react"
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { authClient } from '@/lib/auth-client';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { useState } from 'react';
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   authClient.getSession().then(({ data }) => {
     if (data?.session) {
-      redirect("/platform")
+      redirect('/platform');
     }
-  })
+  });
 
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
-    const confirmPassword = formData.get("confirm-password") as string
-    const name = formData.get("name") as string
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirm-password') as string;
+    const name = formData.get('name') as string;
 
-    console.log({ email, password, confirmPassword, name })
+    console.log({ email, password, confirmPassword, name });
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      return
+      setError('Passwords do not match');
+      return;
     }
 
     const { data, error } = await authClient.signUp.email(
@@ -50,24 +50,24 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         email, // user email address
         password, // user password -> min 8 characters by default
         name, // user display name
-        callbackURL: "/login", // A URL to redirect to after the user verifies their email (optional)
+        callbackURL: '/login', // A URL to redirect to after the user verifies their email (optional)
       },
       {
         onRequest: (ctx) => {
-          setError(null)
-          setLoading(true)
+          setError(null);
+          setLoading(true);
         },
         onSuccess: (ctx) => {
-          setLoading(false)
-          redirect("/login")
+          setLoading(false);
+          redirect('/login');
         },
         onError: (ctx) => {
-          setLoading(false)
-          setError(ctx.error.message)
+          setLoading(false);
+          setError(ctx.error.message);
         },
-      },
-    )
-    console.log(data, error)
+      }
+    );
+    console.log(data, error);
   }
   return (
     <Card {...props}>
@@ -124,7 +124,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               <FieldDescription>Please confirm your password.</FieldDescription>
             </Field>
             <p>
-              {loading && "Creating account..."}{" "}
+              {loading && 'Creating account...'}{' '}
               <span className="text-destructive">{error}</span>
             </p>
             <FieldGroup>
@@ -134,7 +134,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                   variant="outline"
                   type="button"
                   onClick={() =>
-                    authClient.signIn.social({ provider: "google" })
+                    authClient.signIn.social({ provider: 'google' })
                   }
                 >
                   Sign up with Google
@@ -148,5 +148,5 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }
