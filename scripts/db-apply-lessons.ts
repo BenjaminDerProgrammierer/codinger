@@ -1,151 +1,92 @@
-// Development Tool. This is AI Slop.
+import fs from 'fs';
+import path from 'path';
+import { prisma } from '../src/lib/prisma';
+import { LearningPath, Lesson, Unit } from '@/generated/prisma/client';
+import { LearningPathCreateManyInput, LessonCreateManyInput, UnitCreateManyInput } from '@/generated/prisma/internal/prismaNamespaceBrowser';
 
-import "dotenv/config"
-import { prisma } from "../src/lib/prisma"
-import { paths } from "./courses"
+const CONTENT_DIR = path.join(process.cwd(), 'content');
 
-async function syncPath(path: (typeof paths)[number]) {
-  await prisma.learningPath.upsert({
-    where: { id: path.id },
-    update: {
-      title: path.title,
-      description: path.description ?? null,
-    },
-    create: {
-      id: path.id,
-      title: path.title,
-      description: path.description ?? null,
-    },
-  })
+const paths: LearningPathCreateManyInput[] = [];
+const units: Array<UnitCreateManyInput & { pathIndex: number }> = [];
+const lessons: Array<LessonCreateManyInput & { unitIndex: number }> = [];
 
-  const existingUnits = await prisma.unit.findMany({
-    where: { learningPathId: path.id },
-    select: { id: true },
-  })
-  const existingUnitIds = existingUnits.map((unit) => unit.id)
-  const nextUnitIds: number[] = []
+for (const dir of fs.readdirSync(CONTENT_DIR)) {
+    const dirPath = path.join(CONTENT_DIR, dir);
+    if (fs.statSync(dirPath).isDirectory()) {
+        const indexPath = path.join(dirPath, 'index.md');
+        if (fs.existsSync(indexPath)) {
+            const content = fs.readFileSync(indexPath, 'utf-8');
+            const title = readFrontmatterValue(content, 'title') || 'Untitled Path';
+            const description = readFrontmatterValue(content, 'description');
+            paths.push({ title, description });
+        }
 
-  for (const unit of path.units) {
-    nextUnitIds.push(unit.id)
+        // read units (subdirectories)
+        for (const unitDir of fs.readdirSync(dirPath)) {
+            const unitDirPath = path.join(dirPath, unitDir);
+            if (fs.statSync(unitDirPath).isDirectory()) {
+                const unitIndexPath = path.join(unitDirPath, 'index.md');
+                if (fs.existsSync(unitIndexPath)) {
+                    const content = fs.readFileSync(unitIndexPath, 'utf-8');
+                    const title = readFrontmatterValue(content, 'title') || 'Untitled Unit';
+                    const description = readFrontmatterValue(content, 'description');
+                    units.push({ title, description, learningPathId: 0, pathIndex: paths.length - 1 });
+                }
 
-    await prisma.unit.upsert({
-      where: { id: unit.id },
-      update: {
-        title: unit.title,
-        description: unit.description ?? null,
-        learningPathId: path.id,
-      },
-      create: {
-        id: unit.id,
-        title: unit.title,
-        description: unit.description ?? null,
-        learningPathId: path.id,
-      },
-    })
-
-    const existingLessons = await prisma.lesson.findMany({
-      where: { unitId: unit.id },
-      select: { id: true },
-    })
-    const existingLessonIds = existingLessons.map((lesson) => lesson.id)
-    const nextLessonIds: number[] = []
-
-    for (const lesson of unit.lessons) {
-      nextLessonIds.push(lesson.id)
-
-      await prisma.lesson.upsert({
-        where: { id: lesson.id },
-        update: {
-          title: lesson.title,
-          content: lesson.content,
-          unitId: unit.id,
-        },
-        create: {
-          id: lesson.id,
-          title: lesson.title,
-          content: lesson.content,
-          unitId: unit.id,
-        },
-      })
+                // read lessons (subfiles of units)
+                for (const lessonFile of fs.readdirSync(unitDirPath)) {
+                    const lessonFilePath = path.join(unitDirPath, lessonFile);
+                    if (fs.statSync(lessonFilePath).isFile() && lessonFile.endsWith('.md') && lessonFile !== 'index.md') {
+                        const content = fs.readFileSync(lessonFilePath, 'utf-8');
+                        const title = readFrontmatterValue(content, 'title') || 'Untitled Lesson';
+                        lessons.push({ title, content: stripFrontmatter(content), unitId: 0, unitIndex: units.length - 1 });
+                    }
+                }
+            }
+        }
     }
-
-    const lessonIdsToDelete = existingLessonIds.filter((lessonId) => !nextLessonIds.includes(lessonId))
-
-    if (lessonIdsToDelete.length > 0) {
-      await prisma.lesson.deleteMany({
-        where: { id: { in: lessonIdsToDelete } },
-      })
-    }
-  }
-
-  const unitIdsToDelete = existingUnitIds.filter((unitId) => !nextUnitIds.includes(unitId))
-
-  if (unitIdsToDelete.length > 0) {
-    await prisma.lesson.deleteMany({
-      where: { unitId: { in: unitIdsToDelete } },
-    })
-
-    await prisma.unit.deleteMany({
-      where: { id: { in: unitIdsToDelete } },
-    })
-  }
 }
 
-async function deletePathIfUnused(pathId: number) {
-  const userCount = await prisma.user.count({
-    where: { currentPathId: pathId },
-  })
-
-  if (userCount > 0) {
-    console.log(`Skipping path ${pathId}; ${userCount} user(s) still reference it.`)
-    return
-  }
-
-  const unitIds = (
-    await prisma.unit.findMany({
-      where: { learningPathId: pathId },
-      select: { id: true },
-    })
-  ).map((unit) => unit.id)
-
-  if (unitIds.length > 0) {
-    await prisma.lesson.deleteMany({
-      where: { unitId: { in: unitIds } },
-    })
-  }
-
-  await prisma.unit.deleteMany({
-    where: { learningPathId: pathId },
-  })
-
-  await prisma.learningPath.delete({
-    where: { id: pathId },
-  })
-
-  console.log(`Removed unused path ${pathId}`)
+function readFrontmatterValue(content: string, key: string): string | null {
+    const frontmatterMatch = content.match(/---\s*([\s\S]*?)\s*---/);
+    if (frontmatterMatch) {
+        const frontmatter = frontmatterMatch[1];
+        const keyMatch = frontmatter.match(new RegExp(`${key}:\\s*(.*)`));
+        return keyMatch ? keyMatch[1].trim() : null;
+    }
+    return null;
 }
+
+function stripFrontmatter(content: string): string {
+    return content.replace(/---\s*([\s\S]*?)\s*---/, '').trim();
+}
+
+console.log('Paths:', paths);
+console.log('Units:', units);
+console.log('Lessons:', lessons);
 
 async function main() {
-  await prisma.$transaction(async () => {
-    for (const path of paths) {
-      await syncPath(path)
+    await prisma.lesson.deleteMany();
+    await prisma.unit.deleteMany();
+    await prisma.learningPath.deleteMany();
+
+    const createdPaths = [];
+    for (const pathData of paths) {
+        createdPaths.push(await prisma.learningPath.create({ data: pathData }));
     }
 
-    const catalogPathIds = paths.map((path) => path.id)
-    const missingPaths = await prisma.learningPath.findMany({
-      where: { id: { notIn: catalogPathIds } },
-      select: { id: true },
-    })
-
-    for (const path of missingPaths) {
-      await deletePathIfUnused(path.id)
+    const createdUnits = [];
+    for (const unitData of units) {
+        const { pathIndex, ...data } = unitData;
+        createdUnits.push(await prisma.unit.create({ data: { ...data, learningPathId: createdPaths[pathIndex].id } }));
     }
-  })
 
-  console.log(`Applied ${paths.length} learning path(s).`)
+    for (const lessonData of lessons) {
+        const { unitIndex, ...data } = lessonData;
+        await prisma.lesson.create({ data: { ...data, unitId: createdUnits[unitIndex].id } });
+    }
+
+    console.log('Database updated successfully.');
 }
 
-main().catch((error) => {
-  console.error(error)
-  process.exitCode = 1
-})
+main();
