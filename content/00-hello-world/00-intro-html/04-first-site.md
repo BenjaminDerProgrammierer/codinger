@@ -29,13 +29,15 @@ const title = document.querySelector('title');
 const body = document.querySelector('body');
 const h1 = document.querySelector('h1');
 
-if (!html) throw new Error('No <html> element found');
-if (!head) throw new Error('No <head> element found');
-if (!title) throw new Error('No <title> element found');
-if (title.textContent !== 'My first site') throw new Error('The <title> element does not have the correct text content. It should be "My first site"');
-if (!body) throw new Error('No <body> element found');
-if (!h1) throw new Error('No <h1> element found');
-if (h1.textContent !== 'Hello World!') throw new Error('The <h1> element does not have the correct text content. It should be "Hello World!"');
+test('creates a basic HTML document', () => {
+  expect(html).toBeTruthy();
+  expect(head).toBeTruthy();
+  expect(title).toBeTruthy();
+  expect(title.textContent).toBe('My first site');
+  expect(body).toBeTruthy();
+  expect(h1).toBeTruthy();
+  expect(h1.textContent).toBe('Hello World!');
+});
 ```
 
 :::

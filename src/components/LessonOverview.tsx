@@ -1,5 +1,19 @@
-import Markdown from 'react-markdown';
+import Markdown, { type Components } from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import remarkDirective from 'remark-directive';
+import { visit } from 'unist-util-visit';
+import ExerciseBlock from '@/components/ExerciseBlock';
+
+type MDASTNode = {
+  type: string;
+  name?: string;
+  value?: string;
+  children?: MDASTNode[];
+  data?: {
+    hName?: string;
+    hProperties?: Record<string, unknown>;
+  };
+};
 
 import { prisma } from '@/lib/prisma';
 import vscode2026DarkTheme from '@/lib/vscode-2026-dark.theme.json';
@@ -13,6 +27,35 @@ import {
 import { Unit } from '@/generated/prisma/client';
 
 const vscode2026Dark = convertVscodeThemeToPrism(vscode2026DarkTheme);
+type MarkdownCodeProps = {
+  children?: React.ReactNode;
+  className?: string;
+};
+
+const markdownComponents = {
+  'exercise-block': ExerciseBlock,
+  code(props: MarkdownCodeProps) {
+    const { children, className, ...rest } = props as Omit<
+      MarkdownCodeProps,
+      'ref' | 'node'
+    >;
+    const match = /language-(\w+)/.exec(className || '');
+    return match ? (
+      <SyntaxHighlighter
+        {...rest}
+        PreTag="div"
+        language={match[1]}
+        style={vscode2026Dark}
+      >
+        {String(children).replace(/\n$/, '')}
+      </SyntaxHighlighter>
+    ) : (
+      <code {...rest} className={className}>
+        {children}
+      </code>
+    );
+  },
+} as unknown as Components;
 
 export default async function LessonOverview({ unit }: { unit: Unit }) {
   const lessons = await prisma.lesson.findMany({
@@ -27,29 +70,8 @@ export default async function LessonOverview({ unit }: { unit: Unit }) {
           <AccordionContent className="h-auto">
             <div className="wrap-break-word whitespace-pre-wrap">
               <Markdown
-                components={{
-                  code(props) {
-                    const { children, className, ...rest } = props as Omit<
-                      typeof props,
-                      'ref' | 'node'
-                    >;
-                    const match = /language-(\w+)/.exec(className || '');
-                    return match ? (
-                      <SyntaxHighlighter
-                        {...rest}
-                        PreTag="div"
-                        language={match[1]}
-                        style={vscode2026Dark}
-                      >
-                        {String(children).replace(/\n$/, '')}
-                      </SyntaxHighlighter>
-                    ) : (
-                      <code {...rest} className={className}>
-                        {children}
-                      </code>
-                    );
-                  },
-                }}
+                remarkPlugins={[remarkDirective, myRemarkPlugin]}
+                components={markdownComponents}
               >
                 {lesson.content}
               </Markdown>
@@ -59,4 +81,54 @@ export default async function LessonOverview({ unit }: { unit: Unit }) {
       ))}
     </Accordion>
   );
+}
+
+function myRemarkPlugin() {
+  return (tree: MDASTNode): void => {
+    visit(tree as unknown as MDASTNode, (node: unknown) => {
+      const n = node as MDASTNode;
+      if (
+        n.type === 'containerDirective' ||
+        n.type === 'leafDirective' ||
+        n.type === 'textDirective'
+      ) {
+        if (n.name !== 'exercise') return;
+
+        const children = n.children ?? [];
+
+        const textContents = children
+          .filter((child) => child.type === 'paragraph')
+          .map((child) =>
+            (child.children ?? []).map((gc) => gc.value ?? '').join('')
+          )
+          .join('\n\n');
+
+        const codeBlocks = children.filter((child) => child.type === 'code');
+
+        const id = textContents.match(/id:\s*(.*)/)?.[1]?.trim();
+        const language = textContents.match(/language:\s*(.*)/)?.[1]?.trim();
+        const difficulty = textContents
+          .match(/difficulty:\s*(.*)/)?.[1]
+          ?.trim();
+        const prompt = textContents
+          .match(/Prompt:\s*\n\n([\s\S]*?)\n\nStarter:/)?.[1]
+          ?.trim();
+
+        const starter = codeBlocks[0]?.value;
+        const tests = codeBlocks[1]?.value;
+
+        n.data = {
+          hName: 'exercise-block',
+          hProperties: {
+            id,
+            language,
+            difficulty,
+            prompt,
+            starter,
+            tests,
+          },
+        };
+      }
+    });
+  };
 }
