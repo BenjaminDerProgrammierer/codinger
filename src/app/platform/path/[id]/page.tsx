@@ -21,11 +21,15 @@ export default async function Page({
     headers: await headers(),
   });
 
+  if (!session) {
+    redirect('/login');
+  }
+
   const user = await prisma.user.findUnique({
-    where: { id: session?.user.id },
+    where: { id: session.user.id },
   });
 
-  if (!session || !user) {
+  if (!user) {
     redirect('/login');
   }
 
