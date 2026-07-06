@@ -1,10 +1,6 @@
 'use client';
 
 import {
-  // Sandpack,
-  // SandpackCodeEditor,
-  // SandpackConsole,
-  // SandpackFileExplorer,
   SandpackLayout,
   SandpackPreview,
   SandpackProvider,
@@ -13,11 +9,13 @@ import {
   SandpackStack,
   FileTabs,
   useSandpack,
+  SandpackConsole,
 } from '@codesandbox/sandpack-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import Editor, { useMonaco } from '@monaco-editor/react';
-import { useEffect } from 'react';
+import Editor, { EditorProps, useMonaco } from '@monaco-editor/react';
+import { useEffect, useRef } from 'react';
+import { emmetHTML, emmetCSS } from 'emmet-monaco-es';
 
 type ExerciseBlockProps = {
   id?: string;
@@ -59,18 +57,18 @@ export default function ExerciseBlock({
               readOnly: true,
             },
           }}
-          options={{
-            classes: {
-              'sp-layout': 'h-[500px] w-full',
-            },
-          }}
         >
-          <SandpackLayout className="h-full w-full">
-            {/* <SandpackFileExplorer /> */}
-            {/* <SandpackConsole /> */}
-            <MonacoEditor />
-            <SandpackTests />
-            <SandpackPreview showOpenInCodeSandbox={false}></SandpackPreview>
+          {/* make Sandpack layout a full-height flex column so children with flex-1 share height */}
+          <SandpackLayout className="flex flex-col! h-full basis-80!">
+            <SandpackStack className="flex-1! basis-80!">
+              <FileTabs />
+              <MonacoEditor />
+            </SandpackStack>
+            <SandpackPreview className="flex-1! min-h-80" />
+            <SandpackStack className="flex-1! flex-row! min-h-60">
+              <SandpackTests />
+              <SandpackConsole />
+            </SandpackStack>
           </SandpackLayout>
         </SandpackProvider>
       </CardContent>
@@ -78,13 +76,17 @@ export default function ExerciseBlock({
   );
 }
 
-function MonacoEditor() {
+function MonacoEditor(props?: EditorProps) {
   const { code, updateCode } = useActiveCode();
   const { sandpack } = useSandpack();
   const monaco = useMonaco();
+  const editorRef = useRef<unknown>(null);
 
   useEffect(() => {
-    monaco?.editor.defineTheme('dark-2026', {
+    if (!monaco || !editorRef.current) return;
+
+    // Define custom theme
+    monaco.editor.defineTheme('dark-2026', {
       base: 'vs-dark',
       inherit: true,
       rules: [],
@@ -95,18 +97,35 @@ function MonacoEditor() {
     });
   }, [monaco]);
 
+  // Register Emmet tab-expansion + completions for HTML and CSS
+  useEffect(() => {
+    if (!monaco) return;
+    const disposeHTML = emmetHTML(monaco, ['html']);
+    const disposeCSS = emmetCSS(monaco, ['css']);
+    return () => {
+      disposeHTML();
+      disposeCSS();
+    };
+  }, [monaco]);
+
   return (
-    <SandpackStack>
-      <FileTabs />
-      <Editor
-        width="100%"
-        height="100%"
-        language="javascript"
-        theme="vs-dark"
-        key={sandpack.activeFile}
-        defaultValue={code}
-        onChange={(value) => updateCode(value || '')}
-      />
-    </SandpackStack>
+    <Editor
+      {...props}
+      width="100%"
+      height="100%"
+      language={sandpack.activeFile?.split('.').pop()}
+      theme="vs-dark"
+      key={sandpack.activeFile}
+      defaultValue={code}
+      onChange={(value) => updateCode(value || '')}
+      onMount={(editor) => {
+        editorRef.current = editor;
+      }}
+      options={{
+        suggest: {
+          showSnippets: true,
+        },
+      }}
+    />
   );
 }

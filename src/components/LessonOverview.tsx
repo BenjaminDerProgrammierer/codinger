@@ -1,6 +1,7 @@
 import Markdown, { type Components } from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import remarkDirective from 'remark-directive';
+import remarkGfm from 'remark-gfm';
 import { visit } from 'unist-util-visit';
 import ExerciseBlock from '@/components/ExerciseBlock';
 
@@ -34,6 +35,56 @@ type MarkdownCodeProps = {
 
 const markdownComponents = {
   'exercise-block': ExerciseBlock,
+  table: ({ children, ...props }: { children: React.ReactNode }) => (
+    <table className="w-full text-sm border-collapse" {...props}>
+      {children}
+    </table>
+  ),
+  thead: ({ children, ...props }: { children: React.ReactNode }) => (
+    <thead className="bg-muted" {...props}>{children}</thead>
+  ),
+  tbody: ({ children, ...props }: { children: React.ReactNode }) => (
+    <tbody {...props}>{children}</tbody>
+  ),
+  tr: ({ children, ...props }: { children: React.ReactNode }) => (
+    <tr className="border-t" {...props}>{children}</tr>
+  ),
+  th: ({ children, ...props }: { children: React.ReactNode }) => (
+    <th className="text-left px-2 py-1 font-medium" {...props}>{children}</th>
+  ),
+  td: ({ children, ...props }: { children: React.ReactNode }) => (
+    <td className="px-2 py-1" {...props}>{children}</td>
+  ),
+  h1: ({ children, ...props }: { children: React.ReactNode }) => (
+    <h1 className="font-heading text-3xl mt-4 mb-2" {...props}>
+      {children}
+    </h1>
+  ),
+  h2: ({ children, ...props }: { children: React.ReactNode }) => (
+    <h2 className="font-heading text-2xl mt-4 mb-2" {...props}>
+      {children}
+    </h2>
+  ),
+  h3: ({ children, ...props }: { children: React.ReactNode }) => (
+    <h3 className="font-heading text-xl mt-4 mb-2" {...props}>
+      {children}
+    </h3>
+  ),
+  h4: ({ children, ...props }: { children: React.ReactNode }) => (
+    <h4 className="font-heading text-lg mt-4 mb-2" {...props}>
+      {children}
+    </h4>
+  ),
+  h5: ({ children, ...props }: { children: React.ReactNode }) => (
+    <h5 className="font-heading text-base mt-4 mb-2" {...props}>
+      {children}
+    </h5>
+  ),
+  h6: ({ children, ...props }: { children: React.ReactNode }) => (
+    <h6 className="font-heading text-sm mt-4 mb-2" {...props}>
+      {children}
+    </h6>
+  ),
   code(props: MarkdownCodeProps) {
     const { children, className, ...rest } = props as Omit<
       MarkdownCodeProps,
@@ -50,12 +101,15 @@ const markdownComponents = {
         {String(children).replace(/\n$/, '')}
       </SyntaxHighlighter>
     ) : (
-      <code {...rest} className={className}>
+      <code
+        {...rest}
+        className={`${className ?? ''} bg-accent px-1 rounded font-mono`}
+      >
         {children}
       </code>
     );
   },
-} as unknown as Components;
+} as Components;
 
 export default async function LessonOverview({ unit }: { unit: Unit }) {
   const lessons = await prisma.lesson.findMany({
@@ -68,9 +122,9 @@ export default async function LessonOverview({ unit }: { unit: Unit }) {
         <AccordionItem value={`item-${index}`} key={lesson.id}>
           <AccordionTrigger>{lesson.title}</AccordionTrigger>
           <AccordionContent className="h-auto">
-            <div className="wrap-break-word whitespace-pre-wrap">
+            <div className="wrap-break-word whitespace-pre-wrap *:m-0!">
               <Markdown
-                remarkPlugins={[remarkDirective, myRemarkPlugin]}
+                remarkPlugins={[remarkDirective, remarkGfm, myRemarkPlugin]}
                 components={markdownComponents}
               >
                 {lesson.content}
