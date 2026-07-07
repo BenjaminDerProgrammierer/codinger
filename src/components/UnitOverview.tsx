@@ -14,6 +14,7 @@ import { LearningPath } from '@/generated/prisma/client';
 export default async function UnitOverview({ path }: { path: LearningPath }) {
   const units = await prisma.unit.findMany({
     where: { learningPathId: path.id },
+    orderBy: { slug: 'asc' },
   });
 
   return (

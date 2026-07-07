@@ -11,7 +11,9 @@ import {
 } from '@/components/ui/card';
 
 export default async function LearningPaths() {
-  const paths = await prisma.learningPath.findMany();
+  const paths = await prisma.learningPath.findMany({
+    orderBy: { slug: 'asc' },
+  });
 
   return (
     <div className="flex flex-wrap justify-center gap-5 p-5">

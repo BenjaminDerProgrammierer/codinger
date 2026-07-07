@@ -36,52 +36,60 @@ type MarkdownCodeProps = {
 const markdownComponents = {
   'exercise-block': ExerciseBlock,
   table: ({ children, ...props }: { children: React.ReactNode }) => (
-    <table className="w-full text-sm border-collapse" {...props}>
+    <table className="w-full border-collapse text-sm" {...props}>
       {children}
     </table>
   ),
   thead: ({ children, ...props }: { children: React.ReactNode }) => (
-    <thead className="bg-muted" {...props}>{children}</thead>
+    <thead className="bg-muted" {...props}>
+      {children}
+    </thead>
   ),
   tbody: ({ children, ...props }: { children: React.ReactNode }) => (
     <tbody {...props}>{children}</tbody>
   ),
   tr: ({ children, ...props }: { children: React.ReactNode }) => (
-    <tr className="border-t" {...props}>{children}</tr>
+    <tr className="border-t" {...props}>
+      {children}
+    </tr>
   ),
   th: ({ children, ...props }: { children: React.ReactNode }) => (
-    <th className="text-left px-2 py-1 font-medium" {...props}>{children}</th>
+    <th className="px-2 py-1 text-left font-medium" {...props}>
+      {children}
+    </th>
   ),
   td: ({ children, ...props }: { children: React.ReactNode }) => (
-    <td className="px-2 py-1" {...props}>{children}</td>
+    <td className="px-2 py-1" {...props}>
+      {children}
+    </td>
   ),
   h1: ({ children, ...props }: { children: React.ReactNode }) => (
-    <h1 className="font-heading text-3xl mt-4 mb-2" {...props}>
+    <h1 className="mt-4 mb-2 font-heading text-3xl" {...props}>
       {children}
     </h1>
   ),
   h2: ({ children, ...props }: { children: React.ReactNode }) => (
-    <h2 className="font-heading text-2xl mt-4 mb-2" {...props}>
+    <h2 className="mt-4 mb-2 font-heading text-2xl" {...props}>
       {children}
     </h2>
   ),
   h3: ({ children, ...props }: { children: React.ReactNode }) => (
-    <h3 className="font-heading text-xl mt-4 mb-2" {...props}>
+    <h3 className="mt-4 mb-2 font-heading text-xl" {...props}>
       {children}
     </h3>
   ),
   h4: ({ children, ...props }: { children: React.ReactNode }) => (
-    <h4 className="font-heading text-lg mt-4 mb-2" {...props}>
+    <h4 className="mt-4 mb-2 font-heading text-lg" {...props}>
       {children}
     </h4>
   ),
   h5: ({ children, ...props }: { children: React.ReactNode }) => (
-    <h5 className="font-heading text-base mt-4 mb-2" {...props}>
+    <h5 className="mt-4 mb-2 font-heading text-base" {...props}>
       {children}
     </h5>
   ),
   h6: ({ children, ...props }: { children: React.ReactNode }) => (
-    <h6 className="font-heading text-sm mt-4 mb-2" {...props}>
+    <h6 className="mt-4 mb-2 font-heading text-sm" {...props}>
       {children}
     </h6>
   ),
@@ -103,7 +111,7 @@ const markdownComponents = {
     ) : (
       <code
         {...rest}
-        className={`${className ?? ''} bg-accent px-1 rounded font-mono`}
+        className={`${className ?? ''} rounded bg-accent px-1 font-mono`}
       >
         {children}
       </code>
@@ -114,6 +122,7 @@ const markdownComponents = {
 export default async function LessonOverview({ unit }: { unit: Unit }) {
   const lessons = await prisma.lesson.findMany({
     where: { unitId: unit.id },
+    orderBy: { slug: 'asc' },
   });
 
   return (
