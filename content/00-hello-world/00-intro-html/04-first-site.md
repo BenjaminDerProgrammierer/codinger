@@ -23,20 +23,25 @@ Starter:
 Tests:
 
 ```javascript
-const html = document.querySelector('html');
-const head = document.querySelector('head');
-const title = document.querySelector('title');
-const body = document.querySelector('body');
-const h1 = document.querySelector('h1');
+import source from '!raw-loader!./index.html';
+
+function hasTag(name) {
+  return new RegExp(`<${name}(\\s|>|/)`, 'i').test(source);
+}
 
 test('creates a basic HTML document', () => {
-  expect(html).toBeTruthy();
-  expect(head).toBeTruthy();
-  expect(title).toBeTruthy();
-  expect(title.textContent).toBe('My first site');
-  expect(body).toBeTruthy();
-  expect(h1).toBeTruthy();
-  expect(h1.textContent).toBe('Hello World!');
+  expect(hasTag('html')).toBe(true);
+  expect(hasTag('head')).toBe(true);
+  expect(hasTag('title')).toBe(true);
+  expect(hasTag('body')).toBe(true);
+  expect(hasTag('h1')).toBe(true);
+});
+
+test('contains correct title and heading', () => {
+  const doc = new DOMParser().parseFromString(source, 'text/html');
+
+  expect(doc.querySelector('title').textContent).toBe('My first site');
+  expect(doc.querySelector('h1').textContent).toBe('Hello World!');
 });
 ```
 

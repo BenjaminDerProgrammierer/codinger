@@ -46,7 +46,10 @@ export default function ExerciseBlock({
         </div>
         {prompt && <div className="whitespace-pre-wrap">{prompt}</div>}
         <SandpackProvider
-          template="static"
+          customSetup={{
+            environment: 'parcel',
+            entry: '/index.html',
+          }}
           files={{
             '/index.html': {
               code: starter || '',
@@ -55,17 +58,18 @@ export default function ExerciseBlock({
             '/exercise.test.js': {
               code: tests || '',
               readOnly: true,
+              hidden: true,
             },
           }}
         >
           {/* make Sandpack layout a full-height flex column so children with flex-1 share height */}
-          <SandpackLayout className="flex flex-col! h-full basis-80!">
+          <SandpackLayout className="flex h-full basis-80! flex-col!">
             <SandpackStack className="flex-1! basis-80!">
               <FileTabs />
               <MonacoEditor />
             </SandpackStack>
-            <SandpackPreview className="flex-1! min-h-80" />
-            <SandpackStack className="flex-1! flex-row! min-h-60">
+            <SandpackPreview className="min-h-80 flex-1!" />
+            <SandpackStack className="min-h-60 flex-1! flex-row!">
               <SandpackTests />
               <SandpackConsole />
             </SandpackStack>
@@ -113,7 +117,10 @@ function MonacoEditor(props?: EditorProps) {
       {...props}
       width="100%"
       height="100%"
-      language={sandpack.activeFile?.split('.').pop()}
+      language={sandpack.activeFile
+        ?.split('.')
+        .pop()
+        ?.replace('js', 'javascript')}
       theme="vs-dark"
       key={sandpack.activeFile}
       defaultValue={code}
