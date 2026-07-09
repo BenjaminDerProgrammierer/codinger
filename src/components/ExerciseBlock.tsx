@@ -62,17 +62,11 @@ export default function ExerciseBlock({
             },
           }}
         >
-          {/* make Sandpack layout a full-height flex column so children with flex-1 share height */}
-          <SandpackLayout className="flex h-full basis-80! flex-col!">
-            <SandpackStack className="flex-1! basis-80!">
-              <FileTabs />
-              <MonacoEditor />
-            </SandpackStack>
-            <SandpackPreview className="min-h-80 flex-1!" />
-            <SandpackStack className="min-h-60 flex-1! flex-row!">
-              <SandpackTests />
-              <SandpackConsole />
-            </SandpackStack>
+          <SandpackLayout className="block!">
+            <FileTabs />
+            <MonacoEditor className="h-80" />
+            <SandpackPreview className="h-80" />
+            <SandpackTests className="h-60" />
           </SandpackLayout>
         </SandpackProvider>
       </CardContent>
