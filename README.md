@@ -1,10 +1,10 @@
 # Codinger
 
+![main](./screenshots/main.png)
+
 A platform to learn to code by completing interactive coding exercises.
 
-## Screenshots
-
-<!-- TODO: Add screenshots -->
+This is a work in progress.
 
 ## Tech Stack
 
@@ -23,19 +23,17 @@ Apart from that, I need hours for Hack Club Horizons AND I aways wanted to try T
 
 ## How it works
 
-<!-- TODO: Add "How it works" section -->
+TODO: Add "How it works" section
 
-## TODO
+## Work in progress
 
 * Add more courses / content
-* Make the course content rich (currently not interpreting markdown, no code editor, no code execution, etc.)
 
 ## License Attribution
 
 Used code that is Copyright (c) Microsoft Corporation. All rights reserved. under the MIT License. Licensed under the MIT License.
 
-## Considerations for the integrated sandbox / code playground
+## AI use
 
-* <https://github.com/microsoft/monaco-editor>
-* <https://github.com/codesandbox/sandpack>
-* <https://github.com/live-codes/livecodes>
+* I am using models from OpenAI and CLaude to aid in repetetive tasks (coding)
+* The README is fully self-written
