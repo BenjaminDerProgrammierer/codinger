@@ -13,7 +13,7 @@
     "db-studio": "prisma studio",
     "db-migrate": "prisma migrate dev && prisma generate",
     "db-apply-lessons": "tsx ./scripts/db-apply-lessons.ts",
-    "prepush-checks": "npm run lint && npm run format && npm run typecheck && pnpm run build && pnpm run db-apply-lessons"
+    "prepush-checks": "pnpm run build && pnpm run lint && pnpm run format && pnpm run typecheck && pnpm run db-apply-lessons"
   },
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.20.0",
