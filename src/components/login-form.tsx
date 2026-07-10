@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { authClient } from '@/lib/auth-client';
 import { useState } from 'react';
 import { redirect } from 'next/navigation';
+import { KeyRound } from 'lucide-react';
 
 export function LoginForm({
   className,
@@ -60,11 +61,11 @@ export function LoginForm({
         rememberMe: true,
       },
       {
-        onRequest: (ctx) => {
+        onRequest: () => {
           setError(null);
           setLoading(true);
         },
-        onSuccess: (ctx) => {
+        onSuccess: () => {
           setLoading(false);
           redirect('/platform');
         },
@@ -121,11 +122,21 @@ export function LoginForm({
                 <Button
                   variant="outline"
                   type="button"
-                  onClick={() =>
-                    authClient.signIn.social({ provider: 'google' })
-                  }
+                  onClick={async () => {
+                    const { data, error } = await authClient.signIn.passkey({
+                      returnWebAuthnResponse: true,
+                    });
+
+                    if (error) {
+                      setError(`${error.status} ${error.statusText}: ${error.message}`);
+                    } else {
+                      console.log('Passkey login successful:', data);
+                      redirect('/platform');
+                    }
+                  }}
                 >
-                  Login with Google
+                  <KeyRound />
+                  Login with a Passkey
                 </Button>
                 <FieldDescription className="text-center">
                   Don&apos;t have an account? <a href="/signup">Sign up</a>

@@ -32,12 +32,12 @@ model Unit {
 }
 
 model Lesson {
-  id       Int    @id @default(autoincrement())
-  slug     String @unique
-  title    String
-  content  String
-  unit   Unit   @relation(fields: [unitId], references: [id])
-  unitId Int
+  id      Int    @id @default(autoincrement())
+  slug    String @unique
+  title   String
+  content String
+  unit    Unit   @relation(fields: [unitId], references: [id])
+  unitId  Int
 }
 
 // ------ Better Auth Models ------
@@ -54,6 +54,7 @@ model User {
   accounts      Account[]
   currentPathId Int?
   currentPath   LearningPath? @relation(fields: [currentPathId], references: [id])
+  passkeys      Passkey[]
 
   @@unique([email])
   @@map("user")
@@ -105,4 +106,21 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Passkey {
+  id           String    @id
+  name         String?
+  publicKey    String
+  user         User      @relation(fields: [userId], references: [id])
+  userId       String
+  credentialID String
+  counter      Int
+  deviceType   String
+  backedUp     Boolean
+  transports   String?
+  createdAt    DateTime? @db.Timestamptz(3)
+  aaguid       String?
+
+  @@map("passkey")
 }

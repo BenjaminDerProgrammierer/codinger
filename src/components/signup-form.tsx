@@ -130,15 +130,6 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
             <FieldGroup>
               <Field>
                 <Button type="submit">Create Account</Button>
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={() =>
-                    authClient.signIn.social({ provider: 'google' })
-                  }
-                >
-                  Sign up with Google
-                </Button>
                 <FieldDescription className="px-6 text-center">
                   Already have an account? <Link href="/login">Sign in</Link>
                 </FieldDescription>

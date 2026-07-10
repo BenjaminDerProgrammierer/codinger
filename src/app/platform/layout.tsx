@@ -48,6 +48,9 @@ export default async function PlatformLayout({
             <Separator orientation="vertical" />
             <div className="flex items-center gap-2">
               <p>Signed in as {session.user.name}</p>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/platform/settings">Settings</Link>
+              </Button>
               <SignOutButton variant="outline" size="sm">
                 Sign Out
               </SignOutButton>

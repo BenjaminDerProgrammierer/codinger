@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Space_Grotesk, Orbitron, Cascadia_Code } from 'next/font/google';
 
 import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from "@/components/ui/sonner"
 import { cn } from '@/lib/utils';
 import './globals.css';
 
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
     >
       <body>
         <ThemeProvider>{children}</ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );
