@@ -38,18 +38,24 @@ Starter:
 Tests:
 
 ```javascript
-const link = document.querySelector('a');
-if (!link) throw new Error('No <a> element found');
-if (link.textContent !== 'Click here to search!') throw new Error('The <a> element does not have the correct text content. It should be "Click here to search!"');
-if (!link.href) throw new Error('The <a> element does not have an href attribute');
-if (!link.href.startsWith('http')) throw new Error('The <a> element href attribute does not point to a valid URL');
-fetch(link.href)
-    .then(response => {
-        if (!response.ok) throw new Error('The <a> element href attribute does not point to a valid URL');
-    })
-    .catch(error => {
-        throw new Error('The <a> element href attribute does not point to a valid URL');
-    });
+import source from '!raw-loader!./index.html';
+
+function hasTag(name) {
+  return new RegExp(`<${name}(\\s|>|/)`, 'i').test(source);
+}
+
+test('document contains Link', () => {
+  expect(hasTag('a')).toBe(true);
+});
+
+test('document contains correct link text and href', async () => {
+  const doc = new DOMParser().parseFromString(source, 'text/html');
+
+  const link = doc.querySelector('a');
+  expect(link).not.toBeNull();
+  expect(link.textContent).toBe('Click here to search!');
+  expect(link.href).toMatch(/^https?:\/\//);
+});
 ```
 
 :::

@@ -52,14 +52,35 @@ Starter:
 Tests:
 
 ```javascript
-const unorderedList = document.querySelector('ul');
-if (!unorderedList) throw new Error('No <ul> element found');
-const orderedList = document.querySelector('ol');
-if (!orderedList) throw new Error('No <ol> element found');
-const unorderedListItems = unorderedList.querySelectorAll('li');
-if (unorderedListItems.length < 3) throw new Error('The <ul> element should have at least three <li> elements');
-const orderedListItems = orderedList.querySelectorAll('li');
-if (orderedListItems.length < 3) throw new Error('The <ol> element should have at least three <li> elements');
+import source from '!raw-loader!./index.html';
+
+function hasTag(name) {
+  return new RegExp(`<${name}(\\s|>|/)`, 'i').test(source);
+}
+
+test('document contains unordered list', () => {
+  expect(hasTag('ul')).toBe(true);
+});
+
+test('document contains ordered list', () => {
+  expect(hasTag('ol')).toBe(true);
+});
+
+test('document contains at least three list items in unordered list', () => {
+  const doc = new DOMParser().parseFromString(source, 'text/html');
+  const unorderedList = doc.querySelector('ul');
+  expect(unorderedList).not.toBeNull();
+  const unorderedListItems = unorderedList.querySelectorAll('li');
+  expect(unorderedListItems.length).toBeGreaterThanOrEqual(3);
+});
+
+test('document contains at least three list items in ordered list', () => {
+  const doc = new DOMParser().parseFromString(source, 'text/html');
+  const orderedList = doc.querySelector('ol');
+  expect(orderedList).not.toBeNull();
+  const orderedListItems = orderedList.querySelectorAll('li');
+  expect(orderedListItems.length).toBeGreaterThanOrEqual(3);
+});
 ```
 
 :::
