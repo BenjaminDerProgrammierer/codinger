@@ -32,6 +32,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
+// TODO: Change name, email, password
 export default function Page() {
   const [passkeys, setPasskeys] = useState<Passkey[]>([]);
   const [renamingPasskeyId, setRenamingPasskeyId] = useState<string | null>(

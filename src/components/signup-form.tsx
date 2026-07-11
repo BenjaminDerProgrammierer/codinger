@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { useState } from 'react';
+import { toast } from 'sonner';
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   authClient.getSession().then(({ data }) => {
@@ -26,9 +26,6 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       redirect('/platform');
     }
   });
-
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,37 +35,35 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     const confirmPassword = formData.get('confirm-password') as string;
     const name = formData.get('name') as string;
 
-    console.log({ email, password, confirmPassword, name });
-
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
 
-    const { data, error } = await authClient.signUp.email(
+    toast.promise(
+      new Promise<void>(async (resolve, reject) => {
+        const { data, error } = await authClient.signUp.email({
+          name,
+          email,
+          password,
+        });
+        console.log('Sign up response:', { data, error });
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      }),
       {
-        email, // user email address
-        password, // user password -> min 8 characters by default
-        name, // user display name
-        callbackURL: '/login', // A URL to redirect to after the user verifies their email (optional)
-      },
-      {
-        onRequest: (ctx) => {
-          setError(null);
-          setLoading(true);
-        },
-        onSuccess: (ctx) => {
-          setLoading(false);
-          redirect('/login');
-        },
-        onError: (ctx) => {
-          setLoading(false);
-          setError(ctx.error.message);
-        },
+        loading: 'Creating account...',
+        success:
+          'Account created! Please check your email to verify your account.',
+        error: (err) =>
+          err.message || 'An error occurred while creating your account.',
       }
     );
-    console.log(data, error);
   }
+
   return (
     <Card {...props}>
       <CardHeader>
@@ -123,10 +118,6 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               />
               <FieldDescription>Please confirm your password.</FieldDescription>
             </Field>
-            <p>
-              {loading && 'Creating account...'}{' '}
-              <span className="text-destructive">{error}</span>
-            </p>
             <FieldGroup>
               <Field>
                 <Button type="submit">Create Account</Button>

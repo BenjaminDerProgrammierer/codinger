@@ -17,9 +17,9 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { authClient } from '@/lib/auth-client';
-import { useState } from 'react';
 import { redirect } from 'next/navigation';
 import { KeyRound } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function LoginForm({
   className,
@@ -31,51 +31,48 @@ export function LoginForm({
     }
   });
 
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    const { data, error } = await authClient.signIn.email(
-      {
-        /**
-         * The user email
-         */
-        email,
-        /**
-         * The user password
-         */
-        password,
-        /**
-         * A URL to redirect to after the user verifies their email (optional)
-         */
-        callbackURL: '/',
-        /**
-         * remember the user session after the browser is closed.
-         * @default true
-         */
-        rememberMe: true,
-      },
-      {
-        onRequest: () => {
-          setError(null);
-          setLoading(true);
-        },
-        onSuccess: () => {
-          setLoading(false);
+    toast.promise(
+      new Promise<void>(async (resolve, reject) => {
+        const { error } = await authClient.signIn.email({
+          email,
+          password,
+          rememberMe: true,
+        });
+        if (error) {
+          reject(error);
+        } else {
           redirect('/platform');
-        },
-        onError: (ctx) => {
-          setLoading(false);
-          setError(ctx.error.message);
-        },
+        }
+      }),
+      {
+        loading: 'Logging in...',
+        success: 'Logged in successfully!',
+        error: (err) => err.message || 'An error occurred while logging in.',
       }
     );
-    console.log({ data, error });
+  }
+
+  async function handleForgotPassword() {
+    // TODO: https://better-auth.com/docs/authentication/email-password#request-password-reset
+    toast(
+      'Forgot password functionality is not implemented yet. Please contact support.'
+    );
+  }
+
+  async function handlePasskeyLogin() {
+    const { error } = await authClient.signIn.passkey();
+
+    if (error) {
+      toast.error(`${error.status} ${error.statusText}: ${error.message}`);
+    } else {
+      redirect('/platform');
+    }
   }
 
   return (
@@ -103,39 +100,23 @@ export function LoginForm({
               <Field>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  {/* <a
+                  <a
                     href="#"
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    onClick={handleForgotPassword}
                   >
                     Forgot your password?
-                  </a> */}
+                  </a>
                 </div>
                 <Input id="password" type="password" name="password" required />
               </Field>
-              <p>
-                {loading && 'Creating account...'}{' '}
-                <span className="text-destructive">{error}</span>
-              </p>
 
               <Field>
                 <Button type="submit">Login</Button>
                 <Button
                   variant="outline"
                   type="button"
-                  onClick={async () => {
-                    const { data, error } = await authClient.signIn.passkey({
-                      returnWebAuthnResponse: true,
-                    });
-
-                    if (error) {
-                      setError(
-                        `${error.status} ${error.statusText}: ${error.message}`
-                      );
-                    } else {
-                      console.log('Passkey login successful:', data);
-                      redirect('/platform');
-                    }
-                  }}
+                  onClick={handlePasskeyLogin}
                 >
                   <KeyRound />
                   Login with a Passkey

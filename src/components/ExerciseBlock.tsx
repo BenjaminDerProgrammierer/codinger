@@ -6,10 +6,8 @@ import {
   SandpackProvider,
   SandpackTests,
   useActiveCode,
-  SandpackStack,
   FileTabs,
   useSandpack,
-  SandpackConsole,
 } from '@codesandbox/sandpack-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
