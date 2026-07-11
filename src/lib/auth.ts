@@ -4,7 +4,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { nextCookies } from 'better-auth/next-js';
-import { passkey } from "@better-auth/passkey"
+import { passkey } from '@better-auth/passkey';
 
 const connectionString = `${process.env.DATABASE_URL}`;
 
@@ -20,8 +20,5 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [
-    nextCookies(),
-    passkey()
-  ],
+  plugins: [nextCookies(), passkey()],
 });

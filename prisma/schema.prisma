@@ -43,18 +43,18 @@ model Lesson {
 // ------ Better Auth Models ------
 
 model User {
-  id            String        @id
-  name          String
-  email         String
-  emailVerified Boolean       @default(false)
-  image         String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  currentPathId Int?
-  currentPath   LearningPath? @relation(fields: [currentPathId], references: [id])
-  passkeys      Passkey[]
+  id              String        @id
+  name            String
+  email           String
+  emailVerified   Boolean       @default(false)
+  image           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  sessions        Session[]
+  accounts        Account[]
+  currentPathSlug String?
+  currentPath     LearningPath? @relation(fields: [currentPathSlug], references: [slug])
+  passkeys        Passkey[]
 
   @@unique([email])
   @@map("user")

@@ -26,7 +26,7 @@ export default async function LearningPaths() {
           <CardFooter>
             <Button asChild className="mt-auto">
               <Link
-                href={`platform/path/${path.id}?confirmNewPath=true`}
+                href={`platform/path/${path.slug}?confirmNewPath=true`}
                 className="w-full"
               >
                 Start Learning

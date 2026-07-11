@@ -128,7 +128,9 @@ export function LoginForm({
                     });
 
                     if (error) {
-                      setError(`${error.status} ${error.statusText}: ${error.message}`);
+                      setError(
+                        `${error.status} ${error.statusText}: ${error.message}`
+                      );
                     } else {
                       console.log('Passkey login successful:', data);
                       redirect('/platform');

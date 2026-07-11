@@ -7,12 +7,12 @@ import LessonOverview from '@/components/LessonOverview';
 export default async function Page({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { id } = await params;
+  const { slug } = await params;
 
   const unit = await prisma.unit.findUnique({
-    where: { id: Number.parseInt(id) },
+    where: { slug },
   });
 
   if (!unit) {

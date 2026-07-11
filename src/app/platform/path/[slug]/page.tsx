@@ -11,10 +11,10 @@ export default async function Page({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { id } = await params;
+  const { slug } = await params;
   const { confirmNewPath } = (await searchParams) || {};
 
   const session = await auth.api.getSession({
@@ -33,16 +33,16 @@ export default async function Page({
     redirect('/login');
   }
 
-  if (id === 'current') {
-    if (user.currentPathId) {
-      redirect(`/platform/path/${user.currentPathId}`);
+  if (slug === 'current') {
+    if (user.currentPathSlug) {
+      redirect(`/platform/path/${user.currentPathSlug}`);
     } else {
       redirect('/platform/');
     }
   }
 
   const path = await prisma.learningPath.findUnique({
-    where: { id: Number.parseInt(id) },
+    where: { slug },
   });
 
   if (!path) {
@@ -60,11 +60,11 @@ export default async function Page({
   if (confirmNewPath === 'true') {
     await prisma.user.update({
       where: { id: user.id },
-      data: { currentPathId: path.id },
+      data: { currentPathSlug: path.slug },
     });
 
     // Server-side redirect to the same page without query params
-    redirect(`/platform/path/${id}`);
+    redirect(`/platform/path/${path.slug}`);
   }
 
   return (
