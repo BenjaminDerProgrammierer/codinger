@@ -27,7 +27,7 @@ export default async function UnitOverview({ path }: { path: LearningPath }) {
           <CardContent className="h-full">{unit.description}</CardContent>
           <CardFooter>
             <Button asChild className="mt-auto">
-              <Link href={`/platform/unit/${unit.id}`} className="w-full">
+              <Link href={`/platform/unit/${unit.slug}`} className="w-full">
                 Start Learning
               </Link>
             </Button>
