@@ -62,7 +62,7 @@ export default function ExerciseBlock({
             },
           }}
         >
-          <SandpackLayout className="block!">
+          <SandpackLayout className="block!" suppressHydrationWarning>
             <FileTabs />
             <MonacoEditor className="h-80" />
             <SandpackPreview className="h-80" />
