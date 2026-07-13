@@ -47,6 +47,7 @@ export function LoginForm({
         if (error) {
           reject(error);
         } else {
+          resolve();
           redirect('/platform');
         }
       }),

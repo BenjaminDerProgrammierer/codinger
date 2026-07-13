@@ -29,7 +29,6 @@ TODO: Add "How it works" section
 
 * Add more courses / content
 * Add password reset functionality
-* Add a way for users to change their account settings (email, password, etc.)
 
 ## License Attribution
 
