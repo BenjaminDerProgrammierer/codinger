@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export function sendEmail({
+export async function sendEmail({
   to,
   subject,
   body,
@@ -19,8 +19,8 @@ export function sendEmail({
   to: string;
   subject: string;
   body: string;
-}): void {
-  transporter
+}): Promise<void> {
+  return transporter
     .sendMail({
       from: `"${process.env.SMTP_FROM_NAME}" <${process.env.SMTP_FROM_ADDRESS}>`, // sender address
       to: to, // list of recipients
