@@ -121,12 +121,7 @@ export default function UserSettings() {
         <FieldGroup>
           <Field>
             <FieldLabel htmlFor="name">Name</FieldLabel>
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              required
-            />
+            <Input id="name" name="name" type="text" required />
           </Field>
           <FieldGroup>
             <Field>

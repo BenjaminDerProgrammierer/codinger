@@ -136,99 +136,95 @@ export default function PasskeySettings() {
   }
 
   return (
-      <section id="passkeys">
-        <h2 className="mb-2 font-heading text-xl">Passkeys</h2>
-        {passkeys.length > 0 ? (
-          <ul className="mb-4">
-            {passkeys.map((passkey) => (
-              <li key={passkey.id} className="flex items-center gap-2">
-                {getLabelForPasskey(passkey)}, created at:{' '}
-                {new Date(passkey.createdAt).toLocaleString()}{' '}
-                <AlertDialog>
-                  <Button asChild variant="destructive">
-                    <AlertDialogTrigger>Delete Passkey</AlertDialogTrigger>
-                  </Button>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-                        <Trash2Icon />
-                      </AlertDialogMedia>
-                      <AlertDialogTitle>Delete passkey?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This will permanently delete this passkey. You might
-                        loose access to your account if you don&apos;t have any
-                        other passkeys or login methods registered.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel variant="outline">
-                        Cancel
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        variant="destructive"
-                        onClick={() => handleRemovePasskey(passkey.id)}
-                      >
-                        Permanently Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-                <Dialog
-                  open={renamingPasskeyId === passkey.id}
-                  onOpenChange={(open) =>
-                    setRenamingPasskeyId(open ? passkey.id : null)
-                  }
-                >
-                  <Button variant="outline" type="button" asChild>
-                    <DialogTrigger>Rename Passkey</DialogTrigger>
-                  </Button>
+    <section id="passkeys">
+      <h2 className="mb-2 font-heading text-xl">Passkeys</h2>
+      {passkeys.length > 0 ? (
+        <ul className="mb-4">
+          {passkeys.map((passkey) => (
+            <li key={passkey.id} className="flex items-center gap-2">
+              {getLabelForPasskey(passkey)}, created at:{' '}
+              {new Date(passkey.createdAt).toLocaleString()}{' '}
+              <AlertDialog>
+                <Button asChild variant="destructive">
+                  <AlertDialogTrigger>Delete Passkey</AlertDialogTrigger>
+                </Button>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+                      <Trash2Icon />
+                    </AlertDialogMedia>
+                    <AlertDialogTitle>Delete passkey?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete this passkey. You might loose
+                      access to your account if you don&apos;t have any other
+                      passkeys or login methods registered.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel variant="outline">
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      variant="destructive"
+                      onClick={() => handleRemovePasskey(passkey.id)}
+                    >
+                      Permanently Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <Dialog
+                open={renamingPasskeyId === passkey.id}
+                onOpenChange={(open) =>
+                  setRenamingPasskeyId(open ? passkey.id : null)
+                }
+              >
+                <Button variant="outline" type="button" asChild>
+                  <DialogTrigger>Rename Passkey</DialogTrigger>
+                </Button>
 
-                  <DialogContent className="sm:max-w-sm">
-                    <form onSubmit={handleRenamePasskey}>
-                      <DialogHeader>
-                        <DialogTitle>Rename Passkey</DialogTitle>
-                        <DialogDescription>
-                          Rename this passkey to something more memorable. This
-                          name is only stored on the server and is not shared
-                          with any other services.
-                        </DialogDescription>
-                      </DialogHeader>
+                <DialogContent className="sm:max-w-sm">
+                  <form onSubmit={handleRenamePasskey}>
+                    <DialogHeader>
+                      <DialogTitle>Rename Passkey</DialogTitle>
+                      <DialogDescription>
+                        Rename this passkey to something more memorable. This
+                        name is only stored on the server and is not shared with
+                        any other services.
+                      </DialogDescription>
+                    </DialogHeader>
 
+                    <Input type="hidden" name="passkeyId" value={passkey.id} />
+
+                    <Field>
+                      <Label htmlFor={`name-${passkey.id}`}>New Name</Label>
                       <Input
-                        type="hidden"
-                        name="passkeyId"
-                        value={passkey.id}
+                        id={`name-${passkey.id}`}
+                        name="name"
+                        defaultValue={passkey.name}
                       />
+                    </Field>
 
-                      <Field>
-                        <Label htmlFor={`name-${passkey.id}`}>New Name</Label>
-                        <Input
-                          id={`name-${passkey.id}`}
-                          name="name"
-                          defaultValue={passkey.name}
-                        />
-                      </Field>
+                    <DialogFooter>
+                      <Button asChild variant="outline">
+                        <DialogClose>Cancel</DialogClose>
+                      </Button>
 
-                      <DialogFooter>
-                        <Button asChild variant="outline">
-                          <DialogClose>Cancel</DialogClose>
-                        </Button>
-
-                        <Button type="submit">Save changes</Button>
-                      </DialogFooter>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mb-4">No passkeys registered.</p>
-        )}
-        <Button variant="default" onClick={handleAddPasskey}>
-          Add Passkey
-        </Button>
-      </section>
+                      <Button type="submit">Save changes</Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mb-4">No passkeys registered.</p>
+      )}
+      <Button variant="default" onClick={handleAddPasskey}>
+        Add Passkey
+      </Button>
+    </section>
   );
 }
 

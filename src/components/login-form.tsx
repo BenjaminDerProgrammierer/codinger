@@ -65,13 +65,13 @@ export function LoginForm({
       toast.error('Please enter your email address to reset your password.');
       return;
     }
-    
+
     toast.promise(
       new Promise<void>(async (resolve, reject) => {
         const { error } = await authClient.requestPasswordReset({
           email,
           redirectTo: `${window.location.origin}/reset-password`,
-        })
+        });
 
         if (error) {
           reject(error);
@@ -82,7 +82,9 @@ export function LoginForm({
       {
         loading: 'Sending password reset email...',
         success: 'Password reset email sent!',
-        error: (err) => err.message || 'An error occurred while sending the password reset email.',
+        error: (err) =>
+          err.message ||
+          'An error occurred while sending the password reset email.',
       }
     );
   }
