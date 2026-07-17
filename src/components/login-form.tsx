@@ -20,11 +20,13 @@ import { authClient } from '@/lib/auth-client';
 import { redirect } from 'next/navigation';
 import { KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
+import { useState } from 'react';
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
+  const [email, setEmail] = useState('');
   authClient.getSession().then(({ data }) => {
     if (data?.session) {
       redirect('/platform');
@@ -34,7 +36,6 @@ export function LoginForm({
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
     toast.promise(
@@ -60,9 +61,29 @@ export function LoginForm({
   }
 
   async function handleForgotPassword() {
-    // TODO: https://better-auth.com/docs/authentication/email-password#request-password-reset
-    toast(
-      'Forgot password functionality is not implemented yet. Please contact support.'
+    if (!email) {
+      toast.error('Please enter your email address to reset your password.');
+      return;
+    }
+    
+    toast.promise(
+      new Promise<void>(async (resolve, reject) => {
+        const { error } = await authClient.requestPasswordReset({
+          email,
+          redirectTo: `${window.location.origin}/reset-password`,
+        })
+
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      }),
+      {
+        loading: 'Sending password reset email...',
+        success: 'Password reset email sent!',
+        error: (err) => err.message || 'An error occurred while sending the password reset email.',
+      }
     );
   }
 
@@ -96,6 +117,8 @@ export function LoginForm({
                   name="email"
                   placeholder="m@example.com"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </Field>
               <Field>
