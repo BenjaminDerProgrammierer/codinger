@@ -24,7 +24,7 @@ export default async function LearningPaths() {
           </CardHeader>
           <CardContent className="h-full">{path.description}</CardContent>
           <CardFooter>
-            <Button asChild className="mt-auto">
+            <Button asChild className="mt-auto" variant="secondary">
               <Link
                 href={`platform/path/${path.slug}?confirmNewPath=true`}
                 className="w-full"
