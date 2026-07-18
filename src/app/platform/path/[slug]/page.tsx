@@ -72,7 +72,7 @@ export default async function Page({
       <p className="text-sm font-medium text-muted-foreground">Path</p>
       <h2 className="mb-2 font-heading text-2xl">{path.title}</h2>
       <p className="text-muted-foreground">{path.description}</p>
-      <UnitOverview path={path} />
+      <UnitOverview path={path} userId={user.id} />
     </>
   );
 }

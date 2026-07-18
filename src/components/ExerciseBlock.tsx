@@ -12,8 +12,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import Editor, { EditorProps, useMonaco } from '@monaco-editor/react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { emmetHTML, emmetCSS } from 'emmet-monaco-es';
+import { useLessonExerciseProgress } from './LessonExerciseProgress';
 
 type ExerciseBlockProps = {
   id?: string;
@@ -32,6 +33,15 @@ export default function ExerciseBlock({
   starter,
   tests,
 }: ExerciseBlockProps) {
+  const exerciseKey = useId();
+  const { registerExercise, reportExerciseResult } =
+    useLessonExerciseProgress();
+
+  useEffect(
+    () => registerExercise(exerciseKey),
+    [exerciseKey, registerExercise]
+  );
+
   return (
     <Card className="border">
       <CardHeader>
@@ -62,9 +72,17 @@ export default function ExerciseBlock({
         >
           <SandpackLayout className="block!" suppressHydrationWarning>
             <FileTabs />
-            <MonacoEditor className="h-80" />
+            <MonacoEditor
+              className="h-80"
+              onCodeChange={() => reportExerciseResult(exerciseKey, false)}
+            />
             <SandpackPreview className="h-80" />
-            <SandpackTests className="h-60" />
+            <SandpackTests
+              className="h-60"
+              onComplete={(specs) =>
+                reportExerciseResult(exerciseKey, allTestsPassed(specs))
+              }
+            />
           </SandpackLayout>
         </SandpackProvider>
       </CardContent>
@@ -72,7 +90,33 @@ export default function ExerciseBlock({
   );
 }
 
-function MonacoEditor(props?: EditorProps) {
+type TestBlock = {
+  error?: unknown;
+  tests?: Record<string, { status: string }>;
+  describes?: Record<string, TestBlock>;
+};
+
+function allTestsPassed(specs: Record<string, TestBlock>) {
+  const tests = Object.values(specs).flatMap(getTests);
+
+  return (
+    Object.values(specs).every((spec) => !spec.error) &&
+    tests.length > 0 &&
+    tests.every((test) => test.status === 'pass')
+  );
+}
+
+function getTests(block: TestBlock): Array<{ status: string }> {
+  return [
+    ...Object.values(block.tests ?? {}),
+    ...Object.values(block.describes ?? {}).flatMap(getTests),
+  ];
+}
+
+function MonacoEditor({
+  onCodeChange,
+  ...props
+}: EditorProps & { onCodeChange: () => void }) {
   const { code, updateCode } = useActiveCode();
   const { sandpack } = useSandpack();
   const monaco = useMonaco();
@@ -116,7 +160,10 @@ function MonacoEditor(props?: EditorProps) {
       theme="vs-dark"
       key={sandpack.activeFile}
       defaultValue={code}
-      onChange={(value) => updateCode(value || '')}
+      onChange={(value) => {
+        updateCode(value || '');
+        onCodeChange();
+      }}
       onMount={(editor) => {
         editorRef.current = editor;
       }}

@@ -16,16 +16,8 @@ type MDASTNode = {
   };
 };
 
-import { prisma } from '@/lib/prisma';
 import vscode2026DarkTheme from '@/lib/vscode-2026-dark.theme.json';
 import { convertVscodeThemeToPrism } from '@/lib/vscode-theme-to-prism';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Unit } from '@/generated/prisma/client';
 
 const vscode2026Dark = convertVscodeThemeToPrism(vscode2026DarkTheme);
 type MarkdownCodeProps = {
@@ -103,6 +95,7 @@ const markdownComponents = {
       <SyntaxHighlighter
         {...rest}
         PreTag="div"
+        className="max-w-full overflow-x-auto"
         language={match[1]}
         style={vscode2026Dark}
       >
@@ -119,30 +112,16 @@ const markdownComponents = {
   },
 } as Components;
 
-export default async function LessonOverview({ unit }: { unit: Unit }) {
-  const lessons = await prisma.lesson.findMany({
-    where: { unitId: unit.id },
-    orderBy: { slug: 'asc' },
-  });
-
+export default function LessonOverview({ content }: { content: string }) {
   return (
-    <Accordion type="single" collapsible defaultValue="item-0">
-      {lessons.map((lesson, index) => (
-        <AccordionItem value={`item-${index}`} key={lesson.id}>
-          <AccordionTrigger>{lesson.title}</AccordionTrigger>
-          <AccordionContent className="h-auto">
-            <div className="wrap-break-word whitespace-pre-wrap *:m-0!">
-              <Markdown
-                remarkPlugins={[remarkDirective, remarkGfm, myRemarkPlugin]}
-                components={markdownComponents}
-              >
-                {lesson.content}
-              </Markdown>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
+    <div className="wrap-break-word whitespace-pre-wrap *:m-0!">
+      <Markdown
+        remarkPlugins={[remarkDirective, remarkGfm, myRemarkPlugin]}
+        components={markdownComponents}
+      >
+        {content}
+      </Markdown>
+    </div>
   );
 }
 

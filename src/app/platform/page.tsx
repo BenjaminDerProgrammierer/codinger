@@ -10,7 +10,7 @@ export default function Page() {
         web programming and build awesome web applications in no time.
       </p>
       <Button className="mx-auto mb-4 block" variant="default" size="lg" asChild>
-        <Link href="/platform/continue-learning" className="mx-auto block w-fit text-center">
+        <Link href="/platform/continue-learning" className="mx-auto flex w-fit items-center justify-center">
           Continue Learning
         </Link>
       </Button>
