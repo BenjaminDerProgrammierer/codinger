@@ -54,19 +54,37 @@ export default async function LearningPaths() {
 
               <Field className="w-full max-w-sm">
                 <FieldLabel htmlFor="lesson-progress" className="flex">
-                  <span>{completed}/{lessons.length} lessons</span>
-                  <span className="ml-auto">{lessons.length > 0 ? Math.round((completed / lessons.length) * 100) : 0}%</span>
+                  <span>
+                    {completed}/{lessons.length} lessons
+                  </span>
+                  <span className="ml-auto">
+                    {lessons.length > 0
+                      ? Math.round((completed / lessons.length) * 100)
+                      : 0}
+                    %
+                  </span>
                 </FieldLabel>
-                <Progress value={(completed / lessons.length) * 100} id="lesson-progress" />
+                <Progress
+                  value={(completed / lessons.length) * 100}
+                  id="lesson-progress"
+                />
               </Field>
             </CardContent>
             <CardFooter>
               <Button asChild className="mt-auto" variant="secondary">
                 <Link
-                  href={lessons.length === 0 ? '' : `/platform/path/${path.slug}?confirmNewPath=true`}
+                  href={
+                    lessons.length === 0
+                      ? ''
+                      : `/platform/path/${path.slug}?confirmNewPath=true`
+                  }
                   className="w-full"
                 >
-                  {lessons.length === 0 ? 'Coming Soon' : (completed === lessons.length ? 'Review Path' : 'Continue Learning')}
+                  {lessons.length === 0
+                    ? 'Coming Soon'
+                    : completed === lessons.length
+                      ? 'Review Path'
+                      : 'Continue Learning'}
                 </Link>
               </Button>
             </CardFooter>

@@ -47,7 +47,7 @@ export default async function UnitOverview({
             <CardHeader>
               <CardTitle>{unit.title}</CardTitle>
             </CardHeader>
-            <CardContent className="h-full flex gap-5 flex-col justify-between">
+            <CardContent className="flex h-full flex-col justify-between gap-5">
               <p>{unit.description}</p>
 
               <Field className="w-full max-w-sm">
