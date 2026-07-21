@@ -4,7 +4,22 @@ import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 
 import { auth } from '@/lib/auth';
+import { getTestResultGuidance } from '@/lib/ai';
 import { prisma } from '@/lib/prisma';
+
+export async function explainTestResult(
+  testResult: string,
+  document: string,
+  testSource: string
+) {
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  if (!session) {
+    throw new Error('You must be signed in to get test guidance.');
+  }
+
+  return getTestResultGuidance(testResult, document, testSource);
+}
 
 export async function setLessonCompletion(
   lessonId: number,
