@@ -7,6 +7,7 @@ import { nextCookies } from 'better-auth/next-js';
 import { passkey } from '@better-auth/passkey';
 import { sendEmail } from './email';
 import { after } from 'next/server';
+import { genericOAuth } from 'better-auth/plugins';
 
 const connectionString = `${process.env.DATABASE_URL}`;
 
@@ -33,7 +34,21 @@ export const auth = betterAuth({
       );
     },
   },
-  plugins: [nextCookies(), passkey()],
+  plugins: [
+    genericOAuth({
+      config: [
+        {
+          providerId: 'hackclub',
+          clientId: process.env.HACKCLUB_CLIENT_ID!,
+          clientSecret: process.env.HACKCLUB_CLIENT_SECRET!,
+          discoveryUrl:
+            'https://auth.hackclub.com/.well-known/openid-configuration',
+        },
+      ],
+    }),
+    nextCookies(),
+    passkey(),
+  ],
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
       after(

@@ -11,6 +11,14 @@ export function LoginToast({
   error?: string;
 }) {
   useEffect(() => {
+    if (error === 'oauth_code_verification_failed') {
+      toast.error(
+        'Hack Club login failed. Please try again or use another login method.',
+        { id: 'oauth-code-verification-failed' }
+      );
+      return;
+    }
+
     if (emailVerified === 'true') {
       if (error) {
         toast.error(`Error verifying email: ${error}`);

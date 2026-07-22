@@ -21,6 +21,7 @@ import { redirect } from 'next/navigation';
 import { KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export function LoginForm({
   className,
@@ -99,6 +100,31 @@ export function LoginForm({
     }
   }
 
+  async function handleOauthLogin() {
+    toast.promise(
+      new Promise<void>(async (resolve, reject) => {
+        const { error } = await authClient.signIn.oauth2({
+          providerId: 'hackclub',
+          callbackURL: '/platform',
+          errorCallbackURL: '/login',
+          scopes: ['openid', 'profile', 'email'],
+        });
+
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      }),
+      {
+        loading: 'Redirecting to Hack Club...',
+        success: 'Redirected to Hack Club!',
+        error: (err) =>
+          err.message || 'An error occurred while redirecting to Hack Club.',
+      }
+    );
+  }
+
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
@@ -146,6 +172,19 @@ export function LoginForm({
                 >
                   <KeyRound />
                   Login with a Passkey
+                </Button>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={handleOauthLogin}
+                >
+                  <Image
+                    width={18}
+                    height={18}
+                    src="/hack-club.svg"
+                    alt="Hack Club Logo"
+                  />
+                  Login with Hack Club
                 </Button>
                 <FieldDescription className="text-center">
                   Don&apos;t have an account? <a href="/signup">Sign up</a>

@@ -46,8 +46,10 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
       )}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
-        <Toaster />
+        <ThemeProvider>
+          <Toaster />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
